@@ -1,76 +1,108 @@
 #!/usr/bin/python3
-import sys
-''' 
-    column first element, row second element
-'''
-def reject(board):
-    for col_A in board:
-        for col_B in board:
-            if not col_A is col_B:
-                if col_A[0] == col_B[0]:
-                    return True
-                if col_A[1] == col_B[1]:
-                    return True
-                if col_A[1] - col_A[0] == col_B[1] - col_B[0]:
-                    return True
-                if col_A[0] + col_A[1] == col_B[0] + col_B[1]:
-                    return True
-    return False
+"""
 
-def accept(board):
-    if len(board) < board_size:
-        return False
-    else: # more tests def needed
-        return not(reject(board))
+This module contains an algorithm that resolves the N-Queen puzzle
+using backtracking
 
-def print_board(board):
-    print(str(board))
+"""
 
-def first(board):
-    # print("DEBUG: def first()")
-    # print("pre-board: {}".format(board))
-    board.append([len(board), 0])
-    # print("post-board: {}".format(board))
-    return board
 
-def isdone(board):
-    if len(board) == 0:
-        return True
-    # print("DEBUG: isdone:", end='')
-    # print(board[-1][1])
-    if board[-1][1] > board_size:
-        return True
-    else:
-        return False
+def isSafe(m_queen, nqueen):
+    """ Method that determines if the queens can or can't kill each other
 
-def next_board(board):
-    board[-1][1] += 1
-    return board
+    Args:
+        m_queen: array that has the queens positions
+        nqueen: queen number
 
-def bt(board):
-    # print("DEBUG: huck")
-    # print("DEBUG: " + str(board))
-    if reject(board):
-        # print("DEBUG: {}reject: {}".format(board_size, board))
+    Returns:
+        True: when queens can't kill each other
+        False: when some of the queens can kill
+
+    """
+
+    for i in range(nqueen):
+
+        if m_queen[i] == m_queen[nqueen]:
+            return False
+
+        if abs(m_queen[i] - m_queen[nqueen]) == abs(i - nqueen):
+            return False
+
+    return True
+
+
+def print_result(m_queen, nqueen):
+    """ Method that prints the list with the Queens positions
+
+    Args:
+        m_queen: array that has the queens positions
+        nqueen: queen number
+
+    """
+
+    res = []
+
+    for i in range(nqueen):
+        res.append([i, m_queen[i]])
+
+    print(res)
+
+
+def Queen(m_queen, nqueen):
+    """ Recursive function that executes the Backtracking algorithm
+
+    Args:
+        m_queen: array that has the queens positions
+        nqueen: queen number
+
+    """
+
+    if nqueen is len(m_queen):
+        print_result(m_queen, nqueen)
         return
-    if accept(board):
-        print_board(board)
-    if len(board) < board_size - 1:
-        new_board = first(board)
-    # print("DEBUG: new_board = {}".format(new_board))
-    while not isdone(new_board):
-        print("DEBUG: bt() while {}".format(board))
-        bt(new_board)
-        print("DEBUG: after bt() call")
-        new_board = next_board(new_board)
+
+    m_queen[nqueen] = -1
+
+    while((m_queen[nqueen] < len(m_queen) - 1)):
+
+        m_queen[nqueen] += 1
+
+        if isSafe(m_queen, nqueen) is True:
+
+            if nqueen is not len(m_queen):
+                Queen(m_queen, nqueen + 1)
+
+
+def solveNQueen(size):
+    """ Function that invokes the Backtracking algorithm
+
+    Args:
+        size: size of the chessboard
+
+    """
+
+    m_queen = [-1 for i in range(size)]
+
+    Queen(m_queen, 0)
+
 
 if __name__ == '__main__':
-    #one or the other
-    if len(sys.argv) >= 2:
-        board_size = int(sys.argv[1])
-    else:
-        raise ValueError("USAGE: ./101-nqueens.py <x>, where x is board size")
+
+    import sys
+
+    if len(sys.argv) == 1 or len(sys.argv) > 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
+
+    try:
+        size = int(sys.argv[1])
+    except:
+        print("N must be a number")
+        sys.exit(1)
+
+    if size < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    solveNQueen(size)
     
-    bt([])
-    # bt([0,0])
-         
