@@ -1,76 +1,62 @@
 #!/usr/bin/python3
-import sys
-''' 
-    column first element, row second element
-'''
-def reject(board):
-    for col_A in board:
-        for col_B in board:
-            if not col_A is col_B:
-                if col_A[0] == col_B[0]:
-                    return True
-                if col_A[1] == col_B[1]:
-                    return True
-                if col_A[1] - col_A[0] == col_B[1] - col_B[0]:
-                    return True
-                if col_A[0] + col_A[1] == col_B[0] + col_B[1]:
-                    return True
-    return False
+"""
+nqueens backtracking program to print the coordinates of n queens
+on an nxn grid such that they are all in non-attacking positions
+"""
 
-def accept(board):
-    if len(board) < board_size:
-        return False
-    else: # more tests def needed
-        return not(reject(board))
 
-def print_board(board):
-    print(str(board))
+from sys import argv
 
-def first(board):
-    # print("DEBUG: def first()")
-    # print("pre-board: {}".format(board))
-    board.append([len(board), 0])
-    # print("post-board: {}".format(board))
-    return board
+if __name__ == "__main__":
+    a = []
+    if len(argv) != 2:
+        print("Usage: nqueens N")
+        exit(1)
+    if argv[1].isdigit() is False:
+        print("N must be a number")
+        exit(1)
+    n = int(argv[1])
+    if n < 4:
+        print("N must be at least 4")
+        exit(1)
 
-def isdone(board):
-    if len(board) == 0:
-        return True
-    # print("DEBUG: isdone:", end='')
-    # print(board[-1][1])
-    if board[-1][1] > board_size:
-        return True
-    else:
+    # initialize the answer list
+    for i in range(n):
+        a.append([i, None])
+
+    def already_exists(y):
+        """check that a queen does not already exist in that y value"""
+        for x in range(n):
+            if y == a[x][1]:
+                return True
         return False
 
-def next_board(board):
-    board[-1][1] += 1
-    return board
+    def reject(x, y):
+        """determines whether or not to reject the solution"""
+        if (already_exists(y)):
+            return False
+        i = 0
+        while(i < x):
+            if abs(a[i][1] - y) == abs(i - x):
+                return False
+            i += 1
+        return True
 
-def bt(board):
-    # print("DEBUG: huck")
-    # print("DEBUG: " + str(board))
-    if reject(board):
-        # print("DEBUG: {}reject: {}".format(board_size, board))
-        return
-    if accept(board):
-        print_board(board)
-    if len(board) < board_size - 1:
-        new_board = first(board)
-    # print("DEBUG: new_board = {}".format(new_board))
-    while not isdone(new_board):
-        print("DEBUG: bt() while {}".format(board))
-        bt(new_board)
-        print("DEBUG: after bt() call")
-        new_board = next_board(new_board)
+    def clear_a(x):
+        """clears the answers from the point of failure on"""
+        for i in range(x, n):
+            a[i][1] = None
 
-if __name__ == '__main__':
-    #one or the other
-    if len(sys.argv) >= 2:
-        board_size = int(sys.argv[1])
-    else:
-        raise ValueError("USAGE: ./101-nqueens.py <x>, where x is board size")
-    
-    bt([])
-    # bt([0,0])
-         
+    def nqueens(x):
+        """recursive backtracking function to find the solution"""
+        for y in range(n):
+            clear_a(x)
+            if reject(x, y):
+                a[x][1] = y
+                if (x == n - 1):  # accepts the solution
+                    print(a)
+                else:
+                    nqueens(x + 1)  # moves on to next x value to continue
+
+    # start the recursive process at x = 0
+    nqueens(0)
