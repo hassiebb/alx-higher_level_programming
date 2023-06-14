@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """ This module contains an algorithm that resolves the N-Queen puzzle using backtracking """
+
+
 def isSafe(m_queen, nqueen):
     for i in range(nqueen):
         if m_queen[i] == m_queen[nqueen]:
@@ -7,11 +9,15 @@ def isSafe(m_queen, nqueen):
         if abs(m_queen[i] - m_queen[nqueen]) == abs(i - nqueen):
             return False
     return True
+
+
 def print_result(m_queen, nqueen):
     res = []
     for i in range(nqueen):
         res.append([i, m_queen[i]])
     print(res)
+
+
 def Queen(m_queen, nqueen):
     if nqueen is len(m_queen):
         print_result(m_queen, nqueen)
@@ -22,9 +28,13 @@ def Queen(m_queen, nqueen):
         if isSafe(m_queen, nqueen) is True:
             if nqueen is not len(m_queen):
                 Queen(m_queen, nqueen + 1)
+
+
 def solveNQueen(size):
     m_queen = [-1 for i in range(size)]
     Queen(m_queen, 0)
+
+    
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1 or len(sys.argv) > 2:
